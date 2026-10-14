@@ -92,9 +92,11 @@ Les états sont publiés au plus toutes les 15 secondes.
   précédent, l'orage vient vers la maison. Une fois par orage, avec une
   vitesse d'approche approximative.
 
-L'action **état de la foudre** donne `{{count}}`, `{{nearest_km}}`,
-`{{direction}}`, `{{minutes_since_last}}` et `{{storm}}` pour un message ou
-une condition.
+L'action **état de la foudre** donne `count`, `nearest_km`, `direction`,
+`minutes_since_last` et `storm` pour un message ou une condition. Les
+actions suivantes de la scène les trouvent dans leur liste de variables
+(écrites `{{<étape>.<action>.<clé>}}`, par exemple `{{0.0.nearest_km}}`
+quand cette action est la première de la scène).
 
 ## Fonctionnement
 

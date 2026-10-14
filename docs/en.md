@@ -84,9 +84,11 @@ The states are published every 15 seconds at most.
   strike of each third is closer than in the previous one, the storm is
   coming towards the house. Once per storm, with a rough approach speed.
 
-The action **lightning status** gives `{{count}}`, `{{nearest_km}}`,
-`{{direction}}`, `{{minutes_since_last}}` and `{{storm}}` for a message or a
-condition.
+The action **lightning status** gives `count`, `nearest_km`, `direction`,
+`minutes_since_last` and `storm` for a message or a condition. The following
+actions of the scene find them in their variable list (written
+`{{<step>.<action>.<key>}}`, for instance `{{0.0.nearest_km}}` when this
+action is the first of the scene).
 
 ## How it works
 
