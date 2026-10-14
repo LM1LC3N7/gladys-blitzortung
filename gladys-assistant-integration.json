@@ -1,0 +1,401 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Blitzortung lightning",
+  "description": {
+    "en": "Unofficial connector: lightning strikes near your home, distance, direction and storm alerts.",
+    "fr": "Connecteur non officiel : impacts de foudre près de chez vous, distance, direction, alertes."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/lm1lc3n7/gladys-blitzortung:0.1.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/LM1LC3N7/gladys-blitzortung/main/cover.png",
+  "categories": ["environment"],
+  "transports": ["cloud"],
+  "location": true,
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": { "en": "Lightning around your house", "fr": "La foudre autour de chez vous" },
+      "description": {
+        "en": "Unofficial connector, not affiliated with Blitzortung.org. It reads the live feed of the Blitzortung.org community network: one device per located house with the strikes of the last minutes within the radius, the nearest one (distance, direction) and the time of the last one, scene triggers \"lightning within X km\", \"storm over\" and \"storm approaching\", and a storm widget. Bandwidth: the feed is the whole world's, about 1 GB of download a day while a device exists. The data is provided by volunteers who run the detectors, for private, non-commercial use only: never resell it, and credit Blitzortung.org. Lightning detection here is informative, NOT a safety system: never rely on it to protect people or equipment.",
+        "fr": "Connecteur non officiel, sans lien avec Blitzortung.org. Il lit le flux en direct du réseau communautaire Blitzortung.org : un appareil par maison localisée avec les impacts des dernières minutes dans le rayon, le plus proche (distance, direction) et l'heure du dernier, des déclencheurs de scène « foudre à moins de X km », « fin d'orage » et « orage qui se rapproche », et un widget orage. Bande passante : le flux est celui du monde entier, environ 1 Go téléchargé par jour tant qu'un appareil existe. Les données sont fournies par des bénévoles qui font tourner les détecteurs, pour un usage privé et non commercial uniquement : ne les revendez jamais et citez Blitzortung.org. La détection est indicative, ce n'est PAS un système de sécurité : ne comptez jamais dessus pour protéger des personnes ou du matériel."
+      },
+      "links": [
+        {
+          "url": "https://www.blitzortung.org/",
+          "label": {
+            "en": "Blitzortung.org (the volunteer network)",
+            "fr": "Blitzortung.org (le réseau de bénévoles)"
+          }
+        },
+        {
+          "url": "https://map.blitzortung.org/",
+          "label": { "en": "The live map", "fr": "La carte en direct" }
+        },
+        {
+          "url": "https://github.com/LM1LC3N7/gladys-blitzortung/blob/main/docs/fr.md",
+          "label": { "en": "Guide (French)", "fr": "Guide (français)" }
+        },
+        {
+          "url": "https://github.com/LM1LC3N7/gladys-blitzortung/blob/main/docs/en.md",
+          "label": { "en": "Guide (English)", "fr": "Guide (anglais)" }
+        }
+      ]
+    },
+    {
+      "key": "radius_km",
+      "type": "number",
+      "label": { "en": "Radius around the house (km)", "fr": "Rayon autour de la maison (km)" },
+      "description": {
+        "en": "Only the strikes closer than this count. The \"lightning within X km\" trigger cannot see beyond it.",
+        "fr": "Seuls les impacts plus proches comptent. Le déclencheur « foudre à moins de X km » ne voit pas au-delà."
+      },
+      "required": false,
+      "default": 30,
+      "min": 1,
+      "max": 200
+    },
+    {
+      "key": "window_minutes",
+      "type": "number",
+      "label": { "en": "Counting window (minutes)", "fr": "Fenêtre de comptage (minutes)" },
+      "description": {
+        "en": "The device counts the strikes of the last minutes, and gives the nearest one of that window.",
+        "fr": "L'appareil compte les impacts des dernières minutes et donne le plus proche de cette fenêtre."
+      },
+      "required": false,
+      "default": 15,
+      "min": 5,
+      "max": 60
+    },
+    {
+      "key": "quiet_minutes",
+      "type": "number",
+      "label": {
+        "en": "Quiet period before \"storm over\" (minutes)",
+        "fr": "Calme avant « fin d'orage » (minutes)"
+      },
+      "description": {
+        "en": "No strike within the distance for this long: the storm is over, and \"lightning within X km\" can fire again.",
+        "fr": "Aucun impact dans la distance pendant ce temps : l'orage est fini et « foudre à moins de X km » peut se redéclencher."
+      },
+      "required": false,
+      "default": 30,
+      "min": 10,
+      "max": 180
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": { "en": "Language of the directions", "fr": "Langue des directions" },
+      "description": {
+        "en": "The direction of the nearest strike in the states and scenes: N, NE, E... (English: W for west).",
+        "fr": "La direction de l'impact le plus proche dans les états et les scènes : N, NE, E... (français : O pour ouest)."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        { "value": "fr", "label": { "en": "French", "fr": "Français" } },
+        { "value": "en", "label": { "en": "English", "fr": "Anglais" } }
+      ]
+    },
+    {
+      "key": "advanced",
+      "type": "section",
+      "label": { "en": "Advanced", "fr": "Avancé" },
+      "description": {
+        "en": "The integration keeps ONE connection to one of these servers, and moves to the next one when it fails. The feed is worldwide (about 1 GB a day, more in the northern summer). Change the list only if Blitzortung.org changes its servers.",
+        "fr": "L'intégration garde UNE connexion à l'un de ces serveurs, et passe au suivant en cas d'échec. Le flux est mondial (environ 1 Go par jour, davantage pendant l'été de l'hémisphère nord). Ne modifiez la liste que si Blitzortung.org change ses serveurs."
+      }
+    },
+    {
+      "key": "servers",
+      "type": "string",
+      "label": { "en": "Feed servers", "fr": "Serveurs du flux" },
+      "description": {
+        "en": "Short names (ws1 stands for wss://ws1.blitzortung.org/) or wss:// addresses, separated by commas.",
+        "fr": "Noms courts (ws1 vaut wss://ws1.blitzortung.org/) ou adresses wss://, séparés par des virgules."
+      },
+      "required": false,
+      "default": "ws1,ws7,ws8",
+      "placeholder": { "en": "ws1,ws7,ws8", "fr": "ws1,ws7,ws8" }
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "timeout_seconds": 10,
+      "label": { "en": "Test the feed", "fr": "Tester le flux" },
+      "description": {
+        "en": "Shows the server in use, the strikes per minute worldwide and the situation around each house.",
+        "fr": "Affiche le serveur utilisé, les impacts par minute dans le monde et la situation autour de chaque maison."
+      }
+    }
+  ],
+  "widgets": [
+    {
+      "key": "storm",
+      "label": { "en": "Lightning", "fr": "Foudre" },
+      "description": {
+        "en": "Calm or storm at X km in a direction, the strikes of the window, the nearest and the last one.",
+        "fr": "Calme ou orage à X km dans une direction, les impacts de la fenêtre, le plus proche et le dernier."
+      },
+      "icon": "cloud-lightning",
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": { "en": "House", "fr": "Maison" }
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "lightning_nearby",
+      "label": { "en": "Lightning within a distance", "fr": "Foudre à moins d'une distance" },
+      "description": {
+        "en": "A strike closer than the chosen distance: fires once per storm, again only after the quiet period. Beyond the radius of the configuration, the radius applies.",
+        "fr": "Un impact plus proche que la distance choisie : une seule fois par orage, à nouveau seulement après la période de calme. Au-delà du rayon de la configuration, c'est le rayon qui compte."
+      },
+      "fields": [
+        {
+          "key": "area",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": { "en": "House", "fr": "Maison" }
+        },
+        {
+          "key": "distance",
+          "type": "select",
+          "required": true,
+          "label": { "en": "Within", "fr": "À moins de" },
+          "options": [
+            { "value": "5", "label": { "en": "5 km", "fr": "5 km" } },
+            { "value": "10", "label": { "en": "10 km", "fr": "10 km" } },
+            { "value": "15", "label": { "en": "15 km", "fr": "15 km" } },
+            { "value": "20", "label": { "en": "20 km", "fr": "20 km" } },
+            { "value": "30", "label": { "en": "30 km", "fr": "30 km" } },
+            { "value": "50", "label": { "en": "50 km", "fr": "50 km" } },
+            { "value": "100", "label": { "en": "100 km", "fr": "100 km" } },
+            { "value": "200", "label": { "en": "200 km", "fr": "200 km" } }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "km",
+          "type": "number",
+          "label": {
+            "en": "Distance of the nearest strike (km)",
+            "fr": "Distance de l'impact le plus proche (km)"
+          }
+        },
+        {
+          "key": "bearing",
+          "type": "number",
+          "label": { "en": "Bearing (degrees from north)", "fr": "Cap (degrés depuis le nord)" }
+        },
+        {
+          "key": "direction",
+          "type": "string",
+          "label": { "en": "Direction (N, NE...)", "fr": "Direction (N, NE...)" }
+        },
+        {
+          "key": "count",
+          "type": "number",
+          "label": { "en": "Strikes in the window", "fr": "Impacts dans la fenêtre" }
+        },
+        {
+          "key": "strike_at",
+          "type": "string",
+          "label": { "en": "Time of the strike (ISO, UTC)", "fr": "Heure de l'impact (ISO, UTC)" }
+        }
+      ]
+    },
+    {
+      "key": "storm_over",
+      "label": { "en": "Storm over", "fr": "Fin d'orage" },
+      "description": {
+        "en": "No strike within the chosen distance for the quiet period of the configuration, after a \"lightning within\" of the same distance.",
+        "fr": "Aucun impact dans la distance choisie pendant la période de calme de la configuration, après un « foudre à moins de » de la même distance."
+      },
+      "fields": [
+        {
+          "key": "area",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": { "en": "House", "fr": "Maison" }
+        },
+        {
+          "key": "distance",
+          "type": "select",
+          "required": true,
+          "label": { "en": "Within", "fr": "À moins de" },
+          "options": [
+            { "value": "5", "label": { "en": "5 km", "fr": "5 km" } },
+            { "value": "10", "label": { "en": "10 km", "fr": "10 km" } },
+            { "value": "15", "label": { "en": "15 km", "fr": "15 km" } },
+            { "value": "20", "label": { "en": "20 km", "fr": "20 km" } },
+            { "value": "30", "label": { "en": "30 km", "fr": "30 km" } },
+            { "value": "50", "label": { "en": "50 km", "fr": "50 km" } },
+            { "value": "100", "label": { "en": "100 km", "fr": "100 km" } },
+            { "value": "200", "label": { "en": "200 km", "fr": "200 km" } }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "last_strike_at",
+          "type": "string",
+          "label": {
+            "en": "Time of the last strike (ISO, UTC)",
+            "fr": "Heure du dernier impact (ISO, UTC)"
+          }
+        },
+        {
+          "key": "quiet_minutes",
+          "type": "number",
+          "label": { "en": "Quiet period (minutes)", "fr": "Période de calme (minutes)" }
+        }
+      ]
+    },
+    {
+      "key": "storm_approaching",
+      "label": { "en": "Storm approaching", "fr": "Orage qui se rapproche" },
+      "description": {
+        "en": "Inside the radius, the nearest strike got closer over three consecutive thirds of the window. Fires once per storm.",
+        "fr": "Dans le rayon, l'impact le plus proche s'est rapproché sur trois tiers consécutifs de la fenêtre. Une fois par orage."
+      },
+      "fields": [
+        {
+          "key": "area",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": { "en": "House", "fr": "Maison" }
+        }
+      ],
+      "variables": [
+        {
+          "key": "km",
+          "type": "number",
+          "label": {
+            "en": "Distance of the nearest strike (km)",
+            "fr": "Distance de l'impact le plus proche (km)"
+          }
+        },
+        {
+          "key": "bearing",
+          "type": "number",
+          "label": { "en": "Bearing (degrees from north)", "fr": "Cap (degrés depuis le nord)" }
+        },
+        {
+          "key": "direction",
+          "type": "string",
+          "label": { "en": "Direction (N, NE...)", "fr": "Direction (N, NE...)" }
+        },
+        {
+          "key": "speed_kmh",
+          "type": "number",
+          "label": {
+            "en": "Approach speed (km/h, rough)",
+            "fr": "Vitesse d'approche (km/h, approximative)"
+          }
+        },
+        {
+          "key": "count",
+          "type": "number",
+          "label": { "en": "Strikes in the window", "fr": "Impacts dans la fenêtre" }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "get_lightning_status",
+      "label": { "en": "Lightning status", "fr": "État de la foudre" },
+      "description": {
+        "en": "The lightning around a house right now, for a message or a condition that follows.",
+        "fr": "La foudre autour d'une maison en ce moment, pour un message ou une condition qui suit."
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "area",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": { "en": "House", "fr": "Maison" }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "count",
+          "type": "number",
+          "label": { "en": "Strikes in the window", "fr": "Impacts dans la fenêtre" }
+        },
+        {
+          "key": "nearest_km",
+          "type": "number",
+          "label": {
+            "en": "Nearest strike (km, empty when calm)",
+            "fr": "Impact le plus proche (km, vide si calme)"
+          }
+        },
+        {
+          "key": "bearing",
+          "type": "number",
+          "label": { "en": "Bearing of the nearest (degrees)", "fr": "Cap du plus proche (degrés)" }
+        },
+        {
+          "key": "direction",
+          "type": "string",
+          "label": {
+            "en": "Direction of the nearest (N, NE...)",
+            "fr": "Direction du plus proche (N, NE...)"
+          }
+        },
+        {
+          "key": "minutes_since_last",
+          "type": "number",
+          "label": {
+            "en": "Minutes since the last strike",
+            "fr": "Minutes depuis le dernier impact"
+          }
+        },
+        {
+          "key": "storm",
+          "type": "boolean",
+          "label": { "en": "Storm in progress", "fr": "Orage en cours" }
+        },
+        {
+          "key": "approaching",
+          "type": "boolean",
+          "label": { "en": "Storm approaching", "fr": "Orage qui se rapproche" }
+        },
+        {
+          "key": "radius_km",
+          "type": "number",
+          "label": { "en": "Radius (km)", "fr": "Rayon (km)" }
+        },
+        {
+          "key": "window_minutes",
+          "type": "number",
+          "label": { "en": "Window (minutes)", "fr": "Fenêtre (minutes)" }
+        },
+        {
+          "key": "feed_connected",
+          "type": "boolean",
+          "label": { "en": "Feed connected", "fr": "Flux connecté" }
+        }
+      ]
+    }
+  ]
+}
