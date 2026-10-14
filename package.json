@@ -1,6 +1,6 @@
 {
   "name": "gladys-blitzortung",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Gladys Assistant external integration for Blitzortung (lightning detection): nearby strikes with distance and direction, \"lightning within X km\" scene trigger and a storm widget. Unofficial, not affiliated with Blitzortung.org.",
   "type": "module",

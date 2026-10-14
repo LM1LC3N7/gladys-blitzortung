@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-14
+
 ### Added
 
 - One device per located house of Gladys: strikes within the radius during
@@ -27,3 +29,6 @@ the notes of the version's GitHub Release.
 - The live feed of Blitzortung.org (one connection, opened only while a
   device exists, next server with a backoff on failure, watchdog after 2
   minutes of silence).
+
+[Unreleased]: https://github.com/LM1LC3N7/gladys-blitzortung/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/LM1LC3N7/gladys-blitzortung/releases/tag/v0.1.1
