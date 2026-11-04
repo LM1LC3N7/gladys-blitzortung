@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-04
+
 ### Changed
 
 - Integration SDK 0.16 (no change for the devices).
@@ -39,5 +41,6 @@ the notes of the version's GitHub Release.
   device exists, next server with a backoff on failure, watchdog after 2
   minutes of silence).
 
-[Unreleased]: https://github.com/LM1LC3N7/gladys-blitzortung/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/LM1LC3N7/gladys-blitzortung/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/LM1LC3N7/gladys-blitzortung/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/LM1LC3N7/gladys-blitzortung/releases/tag/v0.1.1
