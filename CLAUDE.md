@@ -7,7 +7,7 @@ human contributors.
 
 A Gladys Assistant **external integration** of type `device`: a Node.js
 service (Node 22+, ESM, no build step) in its own sandboxed Docker container,
-talking to Gladys through `@gladysassistant/integration-sdk` (v0.15). It
+talking to Gladys through `@gladysassistant/integration-sdk` (v0.16). It
 reads the live feed of the **Blitzortung.org** lightning network (the
 websocket of map.blitzortung.org) and turns the strikes near each located
 house into a device, scene triggers ("lightning within X km", "storm over",
@@ -18,7 +18,7 @@ affiliated with Blitzortung.org.
 
 ```bash
 npm install
-npm test                                  # node --test, the built-in runner
+npm test                                  # node --test --test-timeout=60000
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -54,6 +54,12 @@ test/helpers/             fake socket + LZW encoder, fake timers; Gladys is the
 
 ## Rules
 
+- **Features follow the core model.** Every feature has a numeric `min` and
+  `max` (0/0 for text), `read_only` and `has_feedback`: Gladys answers HTTP 422
+  otherwise, and the SDK's fake Gladys does not check it
+  (`test/helpers/coreFeature.js` does). Devices carry no `poll_frequency`, so
+  Gladys never polls them (5.3 polls a device with one unless it has
+  `should_poll: false`).
 - **Unofficial.** Every user-facing surface says "unofficial connector, not
   affiliated with Blitzortung.org". Never use the Blitzortung logo.
 - **The data terms.** Blitzortung.org data comes from volunteers, for

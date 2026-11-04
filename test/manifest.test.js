@@ -6,6 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
 import {
   ACTIONS,
   DISTANCE_THRESHOLDS,
@@ -16,6 +17,7 @@ import {
 } from '../src/constants.js';
 import { DEFAULTS, LIMITS } from '../src/config.js';
 import { FEATURE, buildAreaDevice, parseExternalId } from '../src/devices.js';
+import { assertCoreDevice } from './helpers/coreFeature.js';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const manifest = JSON.parse(read('gladys-assistant-integration.json'));
@@ -129,4 +131,10 @@ test('feature keys and external ids are forever', () => {
   assert.equal(device.external_id, 'ext:blitzortung:area:main-house');
   assert.deepEqual(parseExternalId(device.external_id), { houseSelector: 'main-house' });
   assert.equal(parseExternalId('ext:blitzortung:other'), undefined);
+});
+
+test('every feature has a numeric min and max and the other core fields', () => {
+  const gladys = createFakeGladys({ selector: 'blitzortung' });
+  const device = buildAreaDevice(gladys, { name: 'Home', selector: 'main-house' });
+  assert.equal(assertCoreDevice(device, 'area'), Object.keys(FEATURE).length);
 });
